@@ -1,0 +1,6 @@
+# Prometheus Helm Chart
+apiVersion: v2
+name: prometheus
+description: Prometheus monitoring
+type: application
+version: 1.0.0

@@ -1,0 +1,18 @@
+{{- if .Values.ingress.enabled }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: prometheus
+  namespace: {{ .Release.Namespace }}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`prometheus.{{ .Values.cluster.domain }}`)
+      kind: Rule
+      services:
+        - name: prometheus
+          port: 9090
+  tls: {}
+{{- end }}

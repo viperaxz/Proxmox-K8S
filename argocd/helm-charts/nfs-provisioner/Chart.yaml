@@ -1,0 +1,6 @@
+# NFS Provisioner Helm Chart
+apiVersion: v2
+name: nfs-provisioner
+description: NFS Subdir External Provisioner
+type: application
+version: 1.0.0

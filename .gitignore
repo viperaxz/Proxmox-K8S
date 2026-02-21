@@ -1,0 +1,23 @@
+# Terraform
+.terraform*
+*.tfstate*
+
+# Provider / Secrets
+config.env
+config/.credentials
+config/kubernetes.env
+
+# Talos
+talosconfig
+
+# Kubernetes
+kubeconfig
+
+# General secrets safety net
+*.pem
+*.key
+**/secrets/
+!**/sealed-secrets/
+
+# MacOS
+.DS_Store

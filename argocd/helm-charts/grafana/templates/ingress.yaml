@@ -1,0 +1,18 @@
+{{- if .Values.ingress.enabled }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: grafana
+  namespace: {{ .Release.Namespace }}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`grafana.{{ .Values.cluster.domain }}`)
+      kind: Rule
+      services:
+        - name: grafana
+          port: 3000
+  tls: {}
+{{- end }}

@@ -1,0 +1,79 @@
+# ArgoCD Application for ArgoCD (self-managed)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    # Official ArgoCD Helm chart
+    - repoURL: https://argoproj.github.io/argo-helm
+      chart: argo-cd
+      targetRevision: 7.7.0
+      helm:
+        valueFiles:
+          - $values/argocd/helm-values/argocd.yaml
+    # Reference to our values file
+    - repoURL: https://github.com/viperaxz/Proxmox-K8S.git
+      targetRevision: main
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      name: argocd-secret
+      jsonPointers:
+        - /data
+    - group: ""
+      kind: ConfigMap
+      jsonPointers:
+        - /data
+    - group: ""
+      kind: Service
+      jsonPointers:
+        - /spec/clusterIP
+        - /spec/clusterIPs
+    - group: ""
+      kind: ServiceAccount
+      jsonPointers:
+        - /secrets
+    - group: apps
+      kind: Deployment
+      jqPathExpressions:
+        - .metadata.labels."argocd.argoproj.io/instance"
+        - .spec.template.metadata.annotations
+        - .spec.template.metadata.labels."argocd.argoproj.io/instance"
+    - group: apps
+      kind: StatefulSet
+      jqPathExpressions:
+        - .metadata.labels."argocd.argoproj.io/instance"
+        - .spec.template.metadata.annotations
+        - .spec.template.metadata.labels."argocd.argoproj.io/instance"
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+      jsonPointers:
+        - /rules
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+      jsonPointers:
+        - /subjects
+    - group: rbac.authorization.k8s.io
+      kind: Role
+      jsonPointers:
+        - /rules
+    - group: rbac.authorization.k8s.io
+      kind: RoleBinding
+      jsonPointers:
+        - /subjects
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - RespectIgnoreDifferences=true

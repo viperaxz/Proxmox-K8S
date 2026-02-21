@@ -1,0 +1,26 @@
+cluster:
+  domain: "viperax.org"
+
+tls:
+  mode: staging
+  certResolver: letsencrypt-staging
+
+grafana:
+  image: grafana/grafana:11.4.0
+  plugins: "grafana-clock-panel,grafana-piechart-panel"
+  storage:
+    size: 5Gi
+    storageClass: nfs-client
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+credentials:
+  secretName: grafana-credentials
+
+ingress:
+  enabled: true

@@ -1,0 +1,6 @@
+# MetalLB Configuration Helm Chart
+apiVersion: v2
+name: metallb-config
+description: MetalLB IPAddressPool and L2Advertisement configuration
+type: application
+version: 1.0.0

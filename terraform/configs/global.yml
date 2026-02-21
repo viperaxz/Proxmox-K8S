@@ -1,0 +1,10 @@
+machine:
+  features:
+    kubePrism:
+      enabled: true
+      port: 7445
+  install:
+    image: "${talos_installer_image}"
+  kubelet:
+    extraArgs:
+      rotate-server-certificates: true

@@ -1,0 +1,42 @@
+# ArgoCD Application for MetalLB
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: metallb
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-4"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    # MetalLB official manifests
+    - repoURL: https://github.com/metallb/metallb.git
+      targetRevision: v0.14.9
+      path: config/manifests
+      directory:
+        include: "metallb-native.yaml"
+    # Our custom IPAddressPool configuration
+    - repoURL: https://github.com/viperaxz/Proxmox-K8S.git
+      targetRevision: main
+      path: argocd/helm-charts/metallb-config
+      helm:
+        valueFiles:
+          - $values/argocd/values.yaml
+    - repoURL: https://github.com/viperaxz/Proxmox-K8S.git
+      targetRevision: main
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: metallb-system
+  ignoreDifferences:
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      jsonPointers:
+        - /spec/conversion
+        - /status
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

@@ -1,0 +1,6 @@
+# Promtail Helm Chart
+apiVersion: v2
+name: promtail
+description: Promtail log collector
+type: application
+version: 1.0.0

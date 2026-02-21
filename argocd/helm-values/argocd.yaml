@@ -1,0 +1,100 @@
+# ArgoCD Helm Values
+# Uses official argo-helm chart: https://argoproj.github.io/argo-helm
+
+# Global settings
+global:
+  domain: argocd.example.com  # Override in bootstrap
+
+# Server configuration
+server:
+  # Run insecure - TLS terminated by Traefik
+  extraArgs:
+    - --insecure
+  
+  service:
+    type: ClusterIP
+    servicePortHttp: 80
+    servicePortHttps: 443
+
+  # Resources
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# Controller
+controller:
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# Repo Server
+repoServer:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# Application Set Controller
+applicationSet:
+  enabled: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# Notifications
+notifications:
+  enabled: false
+
+# Dex (SSO)
+dex:
+  enabled: false
+
+# Redis
+redis:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+# Configs
+configs:
+  params:
+    # Server runs in insecure mode (TLS at ingress)
+    server.insecure: true
+  
+  cm:
+    # URL settings
+    url: ""  # Set by bootstrap
+    
+    # Disable anonymous access
+    users.anonymous.enabled: "false"
+    
+    # Use annotation-based tracking to avoid label drift
+    application.resourceTrackingMethod: annotation
+    
+    # Resource tracking
+    resource.compareoptions: |
+      ignoreAggregatedRoles: true
+
+  rbac:
+    policy.default: role:readonly
+    policy.csv: |
+      g, admin, role:admin

@@ -1,0 +1,6 @@
+# Grafana Helm Chart
+apiVersion: v2
+name: grafana
+description: Grafana dashboard
+type: application
+version: 1.0.0

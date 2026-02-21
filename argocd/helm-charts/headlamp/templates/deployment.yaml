@@ -1,0 +1,65 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: headlamp-admin
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: headlamp-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: headlamp-admin
+    namespace: {{ .Release.Namespace }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: headlamp
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: headlamp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: headlamp
+  template:
+    metadata:
+      labels:
+        app: headlamp
+    spec:
+      serviceAccountName: headlamp-admin
+      containers:
+        - name: headlamp
+          image: {{ .Values.headlamp.image }}
+          args:
+            - "-in-cluster"
+            - "-plugins-dir=/headlamp/plugins"
+          ports:
+            - containerPort: 4466
+          resources:
+            requests:
+              cpu: {{ .Values.headlamp.resources.requests.cpu }}
+              memory: {{ .Values.headlamp.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.headlamp.resources.limits.cpu }}
+              memory: {{ .Values.headlamp.resources.limits.memory }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: headlamp
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: headlamp
+  ports:
+    - port: 80
+      targetPort: 4466

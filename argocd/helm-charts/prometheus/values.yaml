@@ -1,0 +1,23 @@
+cluster:
+  domain: "viperax.org"
+
+tls:
+  mode: staging
+  certResolver: letsencrypt-staging
+
+prometheus:
+  image: prom/prometheus:v2.54.1
+  retention: 15d
+  storage:
+    size: 20Gi
+    storageClass: nfs-client
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+ingress:
+  enabled: true

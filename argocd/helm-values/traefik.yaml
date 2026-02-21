@@ -1,0 +1,100 @@
+# Traefik Helm Values
+# Uses official Traefik Helm chart: https://traefik.github.io/charts
+
+# Deployment
+deployment:
+  replicas: 1
+
+# Entrypoints
+ports:
+  web:
+    port: 8000
+    expose:
+      default: true
+    exposedPort: 80
+    # HTTP to HTTPS redirect
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    port: 8443
+    expose:
+      default: true
+    exposedPort: 443
+    http3:
+      enabled: false
+
+# Service type
+service:
+  type: LoadBalancer
+  annotations: {}
+
+# Providers
+providers:
+  kubernetesCRD:
+    enabled: true
+    allowCrossNamespace: true
+  kubernetesIngress:
+    enabled: true
+
+# Dashboard
+ingressRoute:
+  dashboard:
+    enabled: true
+    matchRule: Host(`traefik.viperax.org`)
+    entryPoints:
+      - websecure
+    tls: {}
+
+# Persistence for ACME certificates
+persistence:
+  enabled: true
+  storageClass: nfs-client
+  size: 1Gi
+  path: /data
+  accessMode: ReadWriteOnce
+
+# Environment variables for Cloudflare DNS challenge
+env:
+  - name: CF_API_EMAIL
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare-credentials
+        key: CF_API_EMAIL
+        optional: true
+  - name: CF_DNS_API_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare-credentials
+        key: CF_DNS_API_TOKEN
+        optional: true
+
+# Resources
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
+
+# Logs
+logs:
+  general:
+    level: INFO
+  access:
+    enabled: true
+
+# Security Context
+securityContext:
+  capabilities:
+    drop: [ALL]
+  readOnlyRootFilesystem: true
+  runAsGroup: 65532
+  runAsNonRoot: true
+  runAsUser: 65532
+
+podSecurityContext:
+  fsGroup: 65532

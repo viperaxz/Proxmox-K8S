@@ -1,0 +1,14 @@
+# Loki values
+loki:
+  image: grafana/loki:2.9.10
+  retention: 168h
+  storage:
+    size: 20Gi
+    storageClass: nfs-client
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi

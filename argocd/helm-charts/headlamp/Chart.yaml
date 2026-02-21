@@ -1,0 +1,6 @@
+# Headlamp Helm Chart
+apiVersion: v2
+name: headlamp
+description: Headlamp Kubernetes Dashboard
+type: application
+version: 1.0.0

@@ -1,0 +1,19 @@
+cluster:
+  domain: "viperax.org"
+
+tls:
+  mode: staging
+  certResolver: letsencrypt-staging
+
+headlamp:
+  image: ghcr.io/headlamp-k8s/headlamp:v0.25.0
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+ingress:
+  enabled: true
